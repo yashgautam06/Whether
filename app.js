@@ -9,16 +9,18 @@ let clouds = document.getElementById('clouds');
 let humidity = document.getElementById('humidity');
 let pressure = document.getElementById('pressure');
 let main = document.querySelector('main');
+
 form.addEventListener("submit", (e) => {
     e.preventDefault();  
     if(valueSearch.value != ''){
         searchWeather();
     }
 });
+
 const searchWeather = () => {
-    fetch(url+'&q='+ valueSearch.value)
-        .then(response => response.json())
-        .then(data => {
+    axios.get(url + '&q=' + valueSearch.value)
+        .then(response => {
+            const data = response.data;
             console.log(data);
             if(data.cod == 200){
                 city.querySelector('figcaption').innerHTML = data.name;
@@ -30,7 +32,7 @@ const searchWeather = () => {
                 clouds.innerText = data.clouds.all;
                 humidity.innerText = data.main.humidity;
                 pressure.innerText = data.main.pressure;
-            }else{
+            } else {
                 main.classList.add('error');
                 setTimeout(() => {
                     main.classList.remove('error');
@@ -38,10 +40,19 @@ const searchWeather = () => {
             }
             valueSearch.value = '';
         })
+        .catch(error => {
+            console.error(error);
+            main.classList.add('error');
+            setTimeout(() => {
+                main.classList.remove('error');
+            }, 1000);
+        });
 }
+
 // search Default
 const initApp = () => {
     valueSearch.value = 'India';
     searchWeather();
 }
+
 initApp();
